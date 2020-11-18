@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: none;
+      }
+      #textblock {
+        border: 2px solid black;
+        border-radius: 4px;
+        position: absolute;
+        width: 50%;
+        height: calc(100% - 100px);
+        top: 50px;
+        left: 50px;
+        padding: 20px;
+        background-color: #88f;
+        color: #8f9;
+        font-size: 80px;
+      }
+      #stats {
+        position: absolute;
+        border: 2px solid black;
+        border-radius: 4px;
+        left: calc(50% + 100px);
+        height: calc(100% - 100px);
+        width: 40%;
+        top: 50px;
+
+      }
+    </style>
+  </head>
+  <body>
+    <div id="textblock">
+
+    </div>
+    <div id="stats">
+      Tijd:
+      <div id="clock">
+      </div>
+      <br />
+      Toptijden:
+      <div id="topscores">
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var toptijden = [];
+
+    var chars = "1234567890qwertyuiopasdfghjklzxcvbnm".split("");
+    var textblock = document.getElementById("textblock");
+    function showChar(lastChar) {
+      var curChar = chars[Math.round(Math.random() * (chars.length - 1))];
+      while (curChar === lastChar) {
+         curChar = chars[Math.round(Math.random() * (chars.length - 1))];
+      }
+      textblock.innerHTML = curChar;
+      return curChar;
+    }
+
+    textblock.innerHTML = "10 letters!";
+    var intv1, startTime;
+    var tm1 = setTimeout(start, 2000);
+
+    function start() {
+      startTime = new Date().getTime();
+      var count = 10;
+
+      var curChar = showChar();
+
+      function onKeyDown(ev) {
+        if (ev.key === curChar) {
+          if (--count == 0) {
+            window.removeEventListener("keydown", onKeyDown);
+            done();
+          } else {
+            curChar = showChar(curChar);
+          }
+        }
+      }
+
+      window.addEventListener("keydown", onKeyDown);
+
+      clearTimeout(tm1);
+
+      intv1 = setInterval(function() {
+        var time = new Date().getTime() - startTime;
+        document.getElementById("clock").innerHTML = time / 1000;
+      }, 50);
+
+    }
+
+
+    function done() {
+      clearInterval(intv1);
+      var time = new Date().getTime() - startTime;
+      document.getElementById("clock").innerHTML = time / 1000;
+      textblock.innerHTML = "Goed gedaan!<br />Jouw tijd: " + (time / 1000) + " seconden <br />Opnieuw!!!";
+      tm1 = setTimeout(start, 3000);
+      toptijden = toptijden.concat(time).sort(function(a, b) { return a - b;})
+      document.getElementById("topscores").innerHTML = toptijden.map(function(t) { return (t/1000) + "s"; }).join("<br />");
+    }
+
+  </script>
+</html>
